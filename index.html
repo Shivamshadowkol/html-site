@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PG Finder - Home</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.dark-mode {
+            background-color: black;
+            color: white;
+        }
+        header {
+            background: linear-gradient(90deg, red, blue);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        nav {
+            background: purple;
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 20px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: color 0.3s ease-in-out;
+        }
+        nav a:hover {
+            color: black;
+        }
+        .hero {
+            background: url('hero.jpg') no-repeat center center/cover;
+            height: 450px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: grey;
+            font-size: 42px;
+            font-weight: bold;
+            text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);
+            animation: fadeIn 2s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .container {
+            width: 85%;
+            margin: 50px auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 35px;
+            justify-content: center;
+        }
+        .dropdown {
+            text-align: center;
+            margin: 20px;
+        }
+        .dropdown select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 250px;
+        }
+        .card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        footer {
+            background: purple;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    <header>
+        PG Finder - Find Your Perfect Stay
+    </header>
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">PG Listings</a>
+        <a href="#">Hotels</a>
+        <a href="#">Contact</a>
+        <a href="#">About Us</a>
+    </nav>
+    <div class="hero">
+        Discover Comfortable & Affordable PGs & Hotels
+    </div>
+    <div class="dropdown">
+        <label for="location">Select Location: </label>
+        <select id="location">
+            <option value="">All Locations</option>
+            <option value="City Center">City Center</option>
+            <option value="Downtown">Downtown</option>
+            <option value="Suburbs">Suburbs</option>
+            <option value="Near Airport">Near Airport</option>
+        </select>
+    </div>
+    <div class="container" id="accommodation-list"></div>
+    <footer>
+        &copy; 2025 PG Finder | All Rights Reserved
+    </footer>
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+        }
+        if (localStorage.getItem("darkMode") === "true") {
+            document.body.classList.add("dark-mode");
+        }
+
+        async function fetchAccommodations() {
+            const location = document.getElementById('location').value;
+            const url = location ? `http://localhost:5000/api/accommodations?location=${location}` : 'http://localhost:5000/api/accommodations';
+            const response = await fetch(url);
+            const data = await response.json();
+            const container = document.getElementById('accommodation-list');
+            container.innerHTML = '';
+            data.forEach(item => {
+                container.innerHTML += `
+                    <div class="card">
+                        <img src="http://localhost:5000/images/${item.image}" alt="${item.name}">
+                        <h3>${item.name}</h3>
+                        <p>Location: ${item.location}</p>
+                        <p>Price: ${item.price}</p>
+                    </div>
+                `;
+            });
+        }
+
+        document.getElementById('location').addEventListener('change', fetchAccommodations);
+        fetchAccommodations();
+    </script>
+</body>
+</html>
